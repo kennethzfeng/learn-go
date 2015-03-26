@@ -9,6 +9,7 @@ import (
 
 var counter = 0
 var mutex = &sync.Mutex{}
+var done = make(chan bool)
 
 func main() {
 	// Set up the Seed for rand.Intn
@@ -21,8 +22,12 @@ func main() {
 			mutex.Lock()
 			counter += 1
 			mutex.Unlock()
+
+			done <- true
 		}(i)
 	}
 
-	time.Sleep(6 * time.Second)
+	for i := 0; i < 10; i++ {
+		<-done
+	}
 }
