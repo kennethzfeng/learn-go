@@ -37,9 +37,22 @@ func main() {
 	_, err = initDB(db)
 	checkDBExecutionError(err)
 
-	_, err = generateData(db)
+	result, err := generateData(db)
 	checkDBExecutionError(err)
 
+	insertID, err := result.LastInsertId()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Printf("LastInsertId(): %d", insertID)
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Println(err)
+	}
+	log.Printf("RowsAffected(): %d", rowsAffected)
 }
 
 func checkDBExecutionError(err error) {
