@@ -7,6 +7,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+func initDB(db *sql.DB) (sql.Result, error) {
+	query := `
+	CREATE TABLE user (
+		id				INTEGER NOT NULL PRIMARY KEY,
+		username		TEXT
+	)
+	`
+
+	return db.Exec(query)
+}
+
 func main() {
 	db, err := sql.Open("sqlite3", "./app.db")
 
@@ -16,17 +27,9 @@ func main() {
 
 	defer db.Close()
 
-	query := `
-	CREATE TABLE user (
-		id				INTEGER NOT NULL PRIMARY KEY,
-		username		TEXT
-	)
-	`
-
-	_, err = db.Exec(query)
+	_, err = initDB(db)
 	if err != nil {
-		log.Printf("cannot execute query:'\n%s\n' due to %q", query, err)
+		log.Printf("cannot execute query: %q\n", err)
 		return
 	}
-
 }
