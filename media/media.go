@@ -6,9 +6,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
+	"time"
 )
 
 // MediaType My Custom Media Type
@@ -50,6 +53,7 @@ func ScanDir(dirPath string) []Media {
 
 	mediaMap := map[string]MediaType{
 		".mp4": Video,
+		".avi": Video,
 		".jpg": Image,
 		".png": Image,
 	}
@@ -70,9 +74,14 @@ func ScanDir(dirPath string) []Media {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	flag.Parse()
+
 	dirPath := flag.Arg(0)
-	for _, m := range ScanDir(dirPath) {
-		fmt.Println(m)
-	}
+
+	items := ScanDir(dirPath)
+	pick := items[rand.Intn(len(items))]
+
+	fmt.Println(pick)
+	exec.Command("open", pick.Path).Run()
 }
