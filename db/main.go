@@ -18,6 +18,13 @@ func initDB(db *sql.DB) (sql.Result, error) {
 	return db.Exec(query)
 }
 
+func generateData(db *sql.DB) (sql.Result, error) {
+	query := `
+	INSERT INTO user (username) VALUES ('Smith')
+	`
+	return db.Exec(query)
+}
+
 func main() {
 	db, err := sql.Open("sqlite3", "./app.db")
 
@@ -28,6 +35,14 @@ func main() {
 	defer db.Close()
 
 	_, err = initDB(db)
+	checkDBExecutionError(err)
+
+	_, err = generateData(db)
+	checkDBExecutionError(err)
+
+}
+
+func checkDBExecutionError(err error) {
 	if err != nil {
 		log.Printf("cannot execute query: %q\n", err)
 		return
