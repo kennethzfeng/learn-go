@@ -7,7 +7,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func initDB(db *sql.DB) (sql.Result, error) {
+func initDB(db *sql.DB) {
 	query := `
 	CREATE TABLE user (
 		id				INTEGER NOT NULL PRIMARY KEY,
@@ -15,29 +15,15 @@ func initDB(db *sql.DB) (sql.Result, error) {
 	)
 	`
 
-	return db.Exec(query)
-}
-
-func generateData(db *sql.DB) (sql.Result, error) {
-	query := `
-	INSERT INTO user (username) VALUES ('Smith')
-	`
-	return db.Exec(query)
-}
-
-func main() {
-	db, err := sql.Open("sqlite3", "./app.db")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
-
-	_, err = initDB(db)
+	_, err := db.Exec(query)
 	checkDBExecutionError(err)
+}
 
-	result, err := generateData(db)
+func generateData(db *sql.DB) {
+	query := `
+	INSERT INTO user (username) VALUES (?)
+	`
+	result, err := db.Exec(query)
 	checkDBExecutionError(err)
 
 	insertID, err := result.LastInsertId()
@@ -53,6 +39,20 @@ func main() {
 		log.Println(err)
 	}
 	log.Printf("RowsAffected(): %d", rowsAffected)
+}
+
+func main() {
+	db, err := sql.Open("sqlite3", "./app.db")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
+	initDB(db)
+
+	generateData(db)
 }
 
 func checkDBExecutionError(err error) {
