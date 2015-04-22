@@ -25,7 +25,7 @@ func generateData(db *sql.DB) {
 	query := `
 	INSERT INTO user (username) VALUES (?)
 	`
-	result, err := db.Exec(query)
+	result, err := db.Exec(query, "Smith")
 	checkDBExecutionError(err)
 
 	insertID, err := result.LastInsertId()
@@ -41,6 +41,25 @@ func generateData(db *sql.DB) {
 		log.Println(err)
 	}
 	log.Printf("RowsAffected(): %d", rowsAffected)
+}
+
+func selectData(db *sql.DB) {
+	rows, err := db.Query("SELECT * FROM user")
+	checkDBExecutionError(err)
+
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		var username string
+
+		if err := rows.Scan(&id, &username); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("ID: %d Username: %s\n", id, username)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
@@ -68,6 +87,12 @@ func main() {
 			Name: "insert",
 			Action: func(c *cli.Context) {
 				generateData(db)
+			},
+		},
+		{
+			Name: "select",
+			Action: func(c *cli.Context) {
+				selectData(db)
 			},
 		},
 	}
