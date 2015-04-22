@@ -3,7 +3,9 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 
+	"github.com/codegangsta/cli"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -50,9 +52,27 @@ func main() {
 
 	defer db.Close()
 
-	initDB(db)
+	app := cli.NewApp()
+	app.Name = "Database Demo Utility"
+	app.Version = "0.1"
+	app.Author = "Kenneth Feng"
 
-	generateData(db)
+	app.Commands = []cli.Command{
+		{
+			Name: "init",
+			Action: func(c *cli.Context) {
+				initDB(db)
+			},
+		},
+		{
+			Name: "insert",
+			Action: func(c *cli.Context) {
+				generateData(db)
+			},
+		},
+	}
+
+	app.Run(os.Args)
 }
 
 func checkDBExecutionError(err error) {
