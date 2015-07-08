@@ -48,6 +48,10 @@ func (b Box) Alternate() Box {
 // Grid is a 3-by-3 grid.
 type Grid [GridSize][GridSize]Box
 
+func (g Grid) Size() int {
+	return GridSize
+}
+
 // NewGrid return a new Grid representing the 3 by 3 Tic Tac Toe Grid
 func NewGrid() *Grid {
 	var g Grid
@@ -62,10 +66,10 @@ func NewGrid() *Grid {
 }
 
 func (g Grid) CanPlaceAMove(x, y int) bool {
-	if x > GridSize-1 || x < 0 {
+	if x > g.Size()-1 || x < 0 {
 		return false
 	}
-	if y > GridSize-1 || y < 0 {
+	if y > g.Size()-1 || y < 0 {
 		return false
 	}
 
@@ -115,10 +119,10 @@ func (g Grid) CheckForWinner() Box {
 		for _, v := range inner {
 			sum += int(v)
 		}
-		if sum == Cross*3 {
+		if sum == Cross*g.Size() {
 			return Cross
 		}
-		if sum == Circle*3 {
+		if sum == Circle*g.Size() {
 			return Circle
 		}
 	}
@@ -129,10 +133,10 @@ func (g Grid) CheckForWinner() Box {
 		for c := range g[r] {
 			sum += int(g[c][r])
 		}
-		if sum == Cross*3 {
+		if sum == Cross*g.Size() {
 			return Cross
 		}
-		if sum == Circle*3 {
+		if sum == Circle*g.Size() {
 			return Circle
 		}
 	}
@@ -145,10 +149,10 @@ func (g Grid) CheckForWinner() Box {
 	for i := range g {
 		sum += int(g[i][i])
 	}
-	if sum == Cross*3 {
+	if sum == Cross*g.Size() {
 		return Cross
 	}
-	if sum == Circle*3 {
+	if sum == Circle*g.Size() {
 		return Circle
 	}
 
@@ -156,10 +160,10 @@ func (g Grid) CheckForWinner() Box {
 	for i := range g {
 		sum += int(g[i][2-i])
 	}
-	if sum == Cross*3 {
+	if sum == Cross*g.Size() {
 		return Cross
 	}
-	if sum == Circle*3 {
+	if sum == Circle*g.Size() {
 		return Circle
 	}
 
