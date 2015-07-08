@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -98,14 +99,19 @@ func NewGrid() *Grid {
 }
 
 func (g Grid) CanPlaceAMove(x, y int) bool {
-	if x > g.Size()-1 || x < 0 {
-		return false
-	}
-	if y > g.Size()-1 || y < 0 {
+	c := Coordinate{X: x, Y: y}
+	if err := g.boundCheck(c); err != nil {
+		log.Println(err)
 		return false
 	}
 
-	if g[x][y] != Blank {
+	b, err := g.BoxAtCoor(c)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	if b != Blank {
 		return false
 	}
 
