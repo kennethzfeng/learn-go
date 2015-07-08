@@ -45,11 +45,43 @@ func (b Box) Alternate() Box {
 	return Blank
 }
 
+// Coordinate represents the location of a box in the grid
+// coordinate is zero-based index starting from the top left corner
+//
+// For example, (0, 0) would be the box in the upper left hand corner
+type Coordinate struct {
+	X int
+	Y int
+}
+
 // Grid is a 3-by-3 grid.
 type Grid [GridSize][GridSize]Box
 
 func (g Grid) Size() int {
 	return GridSize
+}
+
+func (g Grid) boundCheck(c Coordinate) error {
+	if c.X > g.Size()-1 || c.X < 0 {
+		return errors.New("Coordinate out of bound")
+	}
+	if c.Y > g.Size()-1 || c.Y < 0 {
+		return errors.New("Coordinate out of bound")
+	}
+	return nil
+}
+
+// BoxAtCoor returns the Box value at the coordinate
+func (g Grid) BoxAtCoor(c Coordinate) (Box, error) {
+	if err := g.boundCheck(c); err != nil {
+		return Blank, err
+	}
+	return g[c.X][c.Y], nil
+}
+
+func (g *Grid) SetBoxAtCoor(b Box, c Coordinate) error {
+	g[c.X][c.Y] = b
+	return nil
 }
 
 // NewGrid return a new Grid representing the 3 by 3 Tic Tac Toe Grid
@@ -131,7 +163,8 @@ func (g Grid) CheckForWinner() Box {
 	for r := range g {
 		sum := 0
 		for c := range g[r] {
-			sum += int(g[c][r])
+			b, _ := g.BoxAtCoor(Coordinate{X: c, Y: r})
+			sum += int(b)
 		}
 		if sum == Cross*g.Size() {
 			return Cross
