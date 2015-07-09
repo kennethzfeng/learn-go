@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// Game is a high level object managing the entire cycle of
+// the gameplay, including enforcing rules, alternating players, etc.
 type Game struct {
 	Player1     Box
 	Player2     Box
@@ -13,11 +15,18 @@ type Game struct {
 	won         bool
 }
 
-var ErrInvalidPick = errors.New("invalid pick: O or X")
-var ErrIllegalMove = errors.New("illegal move")
-var ErrNotYourTurn = errors.New("not your turn yet")
-var ErrGameWon = errors.New("game won")
+var (
+	// ErrInvalidPick occurs when picking Blank [ ] for player1
+	ErrInvalidPick = errors.New("invalid pick: O or X")
+	// ErrIllegalMove occurs when making a illegal move
+	ErrIllegalMove = errors.New("illegal move")
+	// ErrNotYourTurn occurs when making two moves
+	ErrNotYourTurn = errors.New("not your turn yet")
+	// ErrGameWon occurs when trying to play on won game
+	ErrGameWon = errors.New("game won")
+)
 
+// NewGame creates a new game with the parameter p1 to indicate w
 func NewGame(p1 Box) (*Game, error) {
 	if p1 == Blank {
 		return nil, ErrInvalidPick
@@ -37,6 +46,7 @@ func (g Game) String() string {
 	return fmt.Sprintf(template, g.CurrentTurn.String(), g.Player1.String(), g.Player2.String(), g.Grid)
 }
 
+// PlaceMove places a move on the game
 func (g *Game) PlaceMove(b Box, x, y int) error {
 	if g.won {
 		return ErrGameWon

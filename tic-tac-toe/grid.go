@@ -19,8 +19,11 @@ const (
 // Box is a unit [ ] in the grid
 type Box int
 
+// ErrUnableToAlternate occurs when Circle state cannot be flipped to Cross
 var ErrUnableToAlternate = errors.New("unable to alternate")
 
+// GridSize is the predefined GridSize
+// TODO need to refactor into type Grid to support n by n grid
 const GridSize = 3
 
 func (b Box) String() string {
@@ -36,6 +39,7 @@ func (b Box) String() string {
 	return ""
 }
 
+// Alternate flips the state from Cross to Circle
 func (b Box) Alternate() Box {
 	if b == Circle {
 		return Cross
@@ -58,6 +62,7 @@ type Coordinate struct {
 // Grid is a 3-by-3 grid.
 type Grid [GridSize][GridSize]Box
 
+// Size returns the Grid size 3x3 grid will return 3
 func (g Grid) Size() int {
 	return GridSize
 }
@@ -80,6 +85,7 @@ func (g Grid) BoxAtCoor(c Coordinate) (Box, error) {
 	return g[c.X][c.Y], nil
 }
 
+// SetBoxAtCoor is the setter for the Box value
 func (g *Grid) SetBoxAtCoor(b Box, c Coordinate) error {
 	g[c.X][c.Y] = b
 	return nil
@@ -98,6 +104,10 @@ func NewGrid() *Grid {
 	return &g
 }
 
+// CanPlaceAMove tests if the Box is blank
+//
+// if so, it will return true so a move can be placed.
+// otherwise, it will return false to indicate a box is filled.
 func (g Grid) CanPlaceAMove(x, y int) bool {
 	c := Coordinate{X: x, Y: y}
 	if err := g.boundCheck(c); err != nil {
